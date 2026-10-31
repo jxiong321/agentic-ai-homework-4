@@ -1,0 +1,291 @@
+{
+  "conditions": {
+    "attention_lost": {
+      "run_id": "planned-4192-s01-4f9a76",
+      "mode": "attention_lost",
+      "label": "bug",
+      "file": "src/components/ExportButton.tsx",
+      "uses_fact": false,
+      "drafting_trace_line": 15,
+      "drafting_request_line": 5,
+      "fact_in_draft": true,
+      "fact_position": 34139,
+      "request_characters": 61155,
+      "edge_distance": 26898,
+      "compaction_trace_lines": [],
+      "fact_sent_calls": [
+        [
+          10,
+          3
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          15,
+          5
+        ],
+        [
+          16,
+          6
+        ]
+      ],
+      "store_read_trace_lines": [
+        8
+      ],
+      "retrieved_rule_ids": []
+    },
+    "attention_fixed": {
+      "run_id": "planned-4192-s01-455f96",
+      "mode": "attention_fixed",
+      "label": "feature",
+      "file": "src/components/ExportButton.tsx",
+      "uses_fact": true,
+      "drafting_trace_line": 15,
+      "drafting_request_line": 5,
+      "fact_in_draft": true,
+      "fact_position": 60564,
+      "request_characters": 60682,
+      "edge_distance": 0,
+      "compaction_trace_lines": [],
+      "fact_sent_calls": [
+        [
+          10,
+          3
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          15,
+          5
+        ],
+        [
+          16,
+          6
+        ]
+      ],
+      "store_read_trace_lines": [
+        8
+      ],
+      "retrieved_rule_ids": []
+    },
+    "compaction_lost": {
+      "run_id": "planned-4192-s01-354fea",
+      "mode": "compaction_lost",
+      "label": "bug",
+      "file": "src/components/ExportButton.tsx",
+      "uses_fact": false,
+      "drafting_trace_line": 18,
+      "drafting_request_line": 6,
+      "fact_in_draft": false,
+      "fact_position": -1,
+      "request_characters": 2095,
+      "edge_distance": null,
+      "compaction_trace_lines": [
+        17
+      ],
+      "fact_sent_calls": [
+        [
+          8,
+          2
+        ],
+        [
+          14,
+          4
+        ],
+        [
+          16,
+          5
+        ]
+      ],
+      "store_read_trace_lines": [
+        6
+      ],
+      "retrieved_rule_ids": []
+    },
+    "compaction_fixed": {
+      "run_id": "planned-4192-s01-b17183",
+      "mode": "compaction_fixed",
+      "label": "feature",
+      "file": "src/components/ExportButton.tsx",
+      "uses_fact": true,
+      "drafting_trace_line": 22,
+      "drafting_request_line": 8,
+      "fact_in_draft": true,
+      "fact_position": 2129,
+      "request_characters": 2247,
+      "edge_distance": 0,
+      "compaction_trace_lines": [
+        17,
+        21
+      ],
+      "fact_sent_calls": [
+        [
+          10,
+          3
+        ],
+        [
+          16,
+          5
+        ],
+        [
+          18,
+          6
+        ],
+        [
+          22,
+          8
+        ],
+        [
+          23,
+          9
+        ]
+      ],
+      "store_read_trace_lines": [
+        8
+      ],
+      "retrieved_rule_ids": []
+    },
+    "session_stated": {
+      "run_id": "planned-4192-s01-fba1a0",
+      "mode": "session_stated",
+      "label": "feature",
+      "file": "src/components/ExportButton.tsx",
+      "uses_fact": true,
+      "drafting_trace_line": 18,
+      "drafting_request_line": 6,
+      "fact_in_draft": true,
+      "fact_position": 7086,
+      "request_characters": 7204,
+      "edge_distance": 0,
+      "compaction_trace_lines": [],
+      "fact_sent_calls": [
+        [
+          10,
+          3
+        ],
+        [
+          16,
+          5
+        ],
+        [
+          18,
+          6
+        ],
+        [
+          19,
+          7
+        ]
+      ],
+      "store_read_trace_lines": [
+        8
+      ],
+      "retrieved_rule_ids": []
+    },
+    "session_lost": {
+      "run_id": "planned-4192-s01-bc5e38",
+      "mode": "session_lost",
+      "label": "bug",
+      "file": "src/components/ExportButton.tsx",
+      "uses_fact": false,
+      "drafting_trace_line": 18,
+      "drafting_request_line": 6,
+      "fact_in_draft": false,
+      "fact_position": -1,
+      "request_characters": 5186,
+      "edge_distance": null,
+      "compaction_trace_lines": [],
+      "fact_sent_calls": [],
+      "store_read_trace_lines": [
+        8
+      ],
+      "retrieved_rule_ids": []
+    },
+    "session_fixed": {
+      "run_id": "planned-4192-s01-8696c8",
+      "mode": "session_fixed",
+      "label": "feature",
+      "file": "src/components/ExportButton.tsx",
+      "uses_fact": true,
+      "drafting_trace_line": 18,
+      "drafting_request_line": 6,
+      "fact_in_draft": true,
+      "fact_position": 7889,
+      "request_characters": 10012,
+      "edge_distance": 2005,
+      "compaction_trace_lines": [],
+      "fact_sent_calls": [
+        [
+          10,
+          3
+        ],
+        [
+          16,
+          5
+        ],
+        [
+          18,
+          6
+        ],
+        [
+          19,
+          7
+        ]
+      ],
+      "store_read_trace_lines": [
+        8
+      ],
+      "retrieved_rule_ids": [
+        "c9df516867674fdeba3ca9d374943ecf"
+      ]
+    }
+  },
+  "attempts": [
+    {
+      "run_id": "planned-4192-s01-b73727",
+      "mode": "session_fixed",
+      "label": "bug",
+      "file": "src/components/ExportButton.tsx",
+      "uses_fact": false,
+      "drafting_trace_line": 13,
+      "drafting_request_line": 4,
+      "fact_in_draft": true,
+      "fact_position": 6743,
+      "request_characters": 7694,
+      "edge_distance": 833,
+      "compaction_trace_lines": [],
+      "fact_sent_calls": [
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          3
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          14,
+          5
+        ]
+      ],
+      "store_read_trace_lines": [
+        6
+      ],
+      "retrieved_rule_ids": [
+        "c9df516867674fdeba3ca9d374943ecf"
+      ]
+    }
+  ],
+  "checks": {
+    "attention": true,
+    "compaction": true,
+    "session": true
+  }
+}

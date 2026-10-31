@@ -51,6 +51,8 @@ from __future__ import annotations
 import copy
 import json
 import re
+import os
+from datetime import datetime, timezone
 
 from agent.critique import self_critique, verify
 from agent.diff import step_args
@@ -60,6 +62,8 @@ from harness.formats import FILL, format_triage_comment, parse_triage_comment, r
 from harness.roles import arg, tool_for
 from harness.schema import errors as schema_errors
 from tools import Unverifiable
+from state.checkpointer import Checkpointer
+from state.store import Store, REPOSITORY
 
 MAX_REPLANS = 2       # three planner calls in all; a fourth on the same request is the same coin, so a person looks
 MAX_REVISIONS = 2     # a repair of the first search, and one more if the repair also finds nothing
@@ -68,6 +72,11 @@ MAX_FILL_TRIES = 2    # a step the model will not fill on plan, twice, halts the
 CHECKPOINT = "after_first_search"
 SOURCE = re.compile(r"^src/(?!i18n/).+\.tsx?$")   # code, not documentation or translations
 CONTEXT_CHARS = 6000  # of each earlier result, in a fill call
+
+F_FACT = "Ledgerline's maintainers label every report about the Export button feature: they plan its fixes on the feature board."
+F_MODES = {"attention_lost", "attention_fixed", "compaction_lost", "compaction_fixed",
+           "session_stated", "session_lost", "session_fixed"}
+
 
 
 def role(name: str | None) -> str | None:
@@ -82,12 +91,44 @@ def allows_null(spec: dict) -> bool:
         isinstance(b, dict) and allows_null(b) for b in spec.get("anyOf") or spec.get("oneOf") or [])
 
 
+class CheckpointMeasurementClient:
+    """Optional measurement wrapper: retain messages sent, outside task checkpoints."""
+    def __init__(self, client):
+        self.client = client
+        self.sent_messages = []
+
+    def __getattr__(self, name):
+        return getattr(self.client, name)
+
+    def create(self, **kwargs):
+        if kwargs.get("system"):
+            self.sent_messages.append({"role": "system", "content": kwargs["system"]})
+        self.sent_messages.extend(copy.deepcopy(kwargs.get("messages", [])))
+        return self.client.create(**kwargs)
+
+
 def run(ctx) -> None:
-    plan = plan_until_valid(ctx)
-    if plan is None:
-        return
-    ctx.trace.plan(1, plan)
-    Executor(ctx, plan).run()
+    checkpointer = Checkpointer()
+    original_client = ctx.client
+    if os.environ.get("REPOMIND_MEASURE_CHECKPOINTS") == "1":
+        ctx.client = CheckpointMeasurementClient(original_client)
+    try:
+        saved = checkpointer.last(ctx.run_id)
+        if saved is None:
+            plan = plan_until_valid(ctx)
+            if plan is None:
+                return
+            ctx.trace.plan(1, plan)
+        else:
+            plan = saved["plan"]
+        executor = Executor(ctx, plan, checkpointer=checkpointer)
+        if saved is not None:
+            executor.restore(saved)
+        executor.run()
+        executor.remember_completion()
+    finally:
+        ctx.client = original_client
+        checkpointer.close()
 
 
 def schema_check(ctx, plan: dict, version: int) -> list[dict]:
@@ -95,6 +136,20 @@ def schema_check(ctx, plan: dict, version: int) -> list[dict]:
     failure is written as a schema line, and comes back as failures for a re-plan."""
     problems = schema_errors({k: v for k, v in plan.items() if k != "meta"}, SCHEMA)
     steps = [s for s in plan.get("steps") or [] if isinstance(s, dict)]
+    for step in steps:
+        try:
+            arguments = json.loads(step.get("args_json", ""))
+        except (TypeError, ValueError):
+            problems.append(f"step {step.get('id')}: args_json must be valid JSON, without extra escaping")
+            continue
+        if not isinstance(arguments, dict):
+            problems.append(f"step {step.get('id')}: args_json must decode to an object")
+            continue
+        schema = next((t for t in ctx.tools.schemas if t["name"] == step.get("tool")), {})
+        required = (schema.get("input_schema") or {}).get("required", [])
+        missing = [key for key in required if key not in arguments]
+        if missing:
+            problems.append(f"step {step.get('id')}: args_json is missing required fields {missing}; use $fill for unknown values")
     roles = [role(s.get("tool")) for s in steps]
     if roles.count("comment") != 1 or roles[-1] != "comment":
         problems.append(f"the comment step comes once, last, with the PR step right before it; this plan's steps are {roles}")
@@ -127,9 +182,48 @@ def plan_until_valid(ctx) -> dict | None:
 class Executor:
     critique = True   # the notes way turns the second pass off
 
-    def __init__(self, ctx, plan: dict):
+    def __init__(self, ctx, plan: dict, *, checkpointer=None):
         self.ctx = ctx
+        self.f_mode = os.environ.get("REPOMIND_F_MODE", "")
+        if self.f_mode and (self.f_mode not in F_MODES or ctx.issue_number != 4192):
+            raise ValueError("Part F modes are supported only on development issue 4192")
+        if self.f_mode.startswith(("attention_", "compaction_")) or self.f_mode == "session_lost":
+            if os.environ.get("REPOMIND_EMPTY_STORE") != "1":
+                raise ValueError("This Part F condition requires REPOMIND_EMPTY_STORE=1")
+        self.f_turns = (["Maintainer priya-s stated: " + F_FACT]
+                        if self.f_mode.startswith("compaction_") else [])
+        self.f_shown = False
+        self.f_compactions = 0
+        self.f_corpus = ""
+        if self.f_mode.startswith("attention_"):
+            limit = int(os.environ.get("REPOMIND_F_CONTEXT_CHARS", "60000"))
+            if not 4000 <= limit <= 120000:
+                raise ValueError("Attention context must be between 4000 and 120000 characters")
+            chunks = []
+            for path in sorted((ctx.root / "fixtures" / "repo").rglob("*")):
+                if path.is_file() and path.suffix in (".ts", ".tsx", ".md", ".json"):
+                    chunks.append(path.read_text(errors="replace"))
+                    if sum(map(len, chunks)) >= limit:
+                        break
+            corpus = "\n".join(chunks)[:limit]
+            midpoint = corpus.find("\n", len(corpus) // 2)
+            midpoint = midpoint if midpoint >= 0 else len(corpus) // 2
+            self.f_corpus = (corpus[:midpoint] + "\nMaintainer priya-s stated: " + F_FACT + "\n" + corpus[midpoint:]
+                             if self.f_mode == "attention_lost" else corpus)
+        if self.f_mode:
+            ctx.trace.event("forgetting_condition", condition=self.f_mode,
+                            context_chars=len(self.f_corpus), compaction_threshold=300)
+
         self.plan = copy.deepcopy(plan)
+        self.checkpointer = checkpointer if checkpointer is not None else Checkpointer()
+        store_path = (ctx.root / "state" / "empty_stores" / f"{ctx.run_id}.db"
+                      if os.environ.get("REPOMIND_EMPTY_STORE") == "1" else None)
+        self.store = Store(store_path)
+        self.memories = self.store.active(REPOSITORY, ctx.issue_number)
+        ctx.trace.event("store_read", issue=ctx.issue_number,
+                        records=[record["id"] for record in self.memories])
+        self.completed_calls: list[dict] = []
+        self.write_args: dict[str, dict] = {}
         self.version = 1
         self.results: list[dict] = []    # step_results (checks/FORMATS.md, section 10.3), in the order steps ran
         self.outputs: dict[str, str] = {}  # each step's tool output, for later calls; never shown to the reviser
@@ -137,6 +231,32 @@ class Executor:
         self.revisions = 0
         self.revised: set[str] = set()   # ids of steps a revision added or changed: the checkpoint follows them
         self.ran: set[str] = set()       # ids of steps that ran and are not to run again
+
+    def restore(self, saved: dict) -> None:
+        """Restore task state without asking the model to reconstruct any write."""
+        self.plan = copy.deepcopy(saved["plan"])
+        self.completed_calls = copy.deepcopy(saved["completed_calls"])
+        findings = saved["findings"]
+        self.write_args = copy.deepcopy(findings.get("write_args", {}))
+        self.draft = copy.deepcopy(findings.get("draft"))
+        self.drafted_file = findings.get("file")
+        state = findings.get("executor", {})
+        self.version = state.get("version", 1)
+        self.calls = state.get("calls", 0)
+        self.revisions = state.get("revisions", 0)
+        self.revised = set(state.get("revised", []))
+        self.results = copy.deepcopy(state.get("results", []))
+        statuses = saved["step_status"]
+        self.ran = set(state.get("ran", []))
+        self.ran.update(sid for sid, status in statuses.items() if status in ("done", "skipped"))
+        # A running step has no recorded outcome and must be retried.
+        self.ran.difference_update(sid for sid, status in statuses.items() if status in ("pending", "running"))
+        for step in self.plan.get("steps", []):
+            step["status"] = statuses[str(step["id"])]
+        self.outputs = {str(call["step"]): call["result"]["content"]
+                        for call in self.completed_calls}
+        self.ctx.trace.event("checkpoint_loaded", current_step=saved["current_step"],
+                             completed_steps=sorted(self.ran))
 
     # -- the plan, in order ------------------------------------------------------------
     def next_step(self) -> dict | None:
@@ -146,6 +266,7 @@ class Executor:
         while True:
             step = self.next_step()
             if step is None:
+                self.save_progress(None)
                 return                            # the plan is finished; the runner writes completed
             if role(step.get("tool")) in ("open_pr", "comment") and self.draft is None:
                 if not self.prepare(self.comment_step()):
@@ -164,6 +285,9 @@ class Executor:
                 return                            # halted, and ended escalated
             if role(step.get("tool")) == "search" and (first or str(step.get("id")) in self.revised):
                 self.checkpoint(CHECKPOINT, any(SOURCE.match(p) for p in result.get("paths") or []))
+            if role(step.get("tool")) == "search":
+                upcoming = self.next_step()
+                self.save_progress(step.get("id"), current_step=upcoming.get("id") if upcoming else None)
 
     # -- one step ------------------------------------------------------------------------
     def run_step(self, step: dict) -> dict | None:
@@ -179,6 +303,10 @@ class Executor:
     def call(self, step: dict, tool: str, args: dict):
         """One tool call for a plan step; None when the registry could not confirm a
         write, and the run has ended escalated (the third exit)."""
+        step["status"] = "running"
+        if role(tool) in ("open_pr", "comment"):
+            self.write_args[str(step["id"])] = copy.deepcopy(args)
+            self.save_progress(step["id"], current_step=step["id"])
         try:
             return self.ctx.call_tool(self.calls, tool, args, plan_step=step.get("id"))
         except Unverifiable as exc:
@@ -187,6 +315,8 @@ class Executor:
             return None
 
     def filled(self, step: dict, args: dict) -> dict | None:
+        if role(step.get("tool")) in ("open_pr", "comment") and str(step["id"]) in self.write_args:
+            return copy.deepcopy(self.write_args[str(step["id"])])
         to_fill = [k for k, v in args.items() if str(v).startswith(FILL)]   # "$fill", or "$fill: a note"
         if not to_fill:
             return args
@@ -210,7 +340,10 @@ class Executor:
         nullable = {k for k, s in props.items() if isinstance(s, dict) and allows_null(s)}
         for _ in range(MAX_FILL_TRIES):
             self.calls += 1
-            response = self.ctx.client.create(system=self.ctx.prompt(system), tools=[schema],
+            system_text = self.ctx.prompt(system)
+            if any(r["source"] == "user" and r["confirmed"] and r["kind"] == "procedural" for r in self.memories):
+                system_text += "\n\n" + self.ctx.prompt("memory_authority.md")
+            response = self.ctx.client.create(system=system_text, tools=[schema],
                                               messages=[{"role": "user", "content": self.fill_request(step, fixed, keys, note)}])
             self.ctx.trace.model_call(self.calls, response, purpose=purpose)
             for call in response.tool_calls:
@@ -234,8 +367,35 @@ class Executor:
 
     def context(self) -> list[str]:
         """What the run has gathered so far, one block per step, for a fill or a critique."""
-        return [f"## Step {r['id']}, {r['tool']}, {r['status']}\n{self.outputs.get(str(r['id']), '')[:CONTEXT_CHARS]}"
-                for r in self.results]
+        blocks = [f"## Step {r['id']}, {r['tool']}, {r['status']}\n{self.outputs.get(str(r['id']), '')[:CONTEXT_CHARS]}"
+                  for r in self.results]
+        if self.f_mode.startswith("compaction_"):
+            size = (len("\n".join(self.f_turns)) + 3) // 4
+            if self.f_shown and size > 300 and len(self.f_turns) > 1:
+                self.calls += 1
+                response = self.ctx.client.create(system=self.ctx.prompt("compact_fact.md"),
+                    messages=[{"role": "user", "content": "\n\n".join(self.f_turns)}])
+                self.ctx.trace.model_call(self.calls, response)
+                self.f_turns = ["Tool activity summary: " + response.text]
+                self.f_compactions += 1
+                self.ctx.trace.event("compaction", threshold=300, tokens=size,
+                                     summarized="tool history", kept="issue outside history")
+            # Preserve the task verbatim; only tool history is summarized.
+            blocks = [block for block, result in zip(blocks, self.results)
+                      if role(result["tool"]) == "read_issue"] + self.f_turns
+        if self.memories:
+            now = datetime.now(timezone.utc)
+            records = [dict(record, age_days=round((now - datetime.fromisoformat(
+                record["written_at"].replace("Z", "+00:00"))).total_seconds() / 86400, 2))
+                       for record in self.memories]
+            blocks.append(self.ctx.prompt("memory.md") + "\n" + json.dumps(records))
+            rules = [r for r in records if r["source"] == "user" and r["confirmed"] and r["kind"] == "procedural"]
+            if rules:
+                blocks.append("Current maintainer rules retrieved from the store (apply within scope):\n" +
+                              "\n".join(f"Record {r['id']}; stated by {r['stated_by']}; "
+                                        f"source={r['source']}; age={r['age_days']} days; "
+                                        f"issue scope={r['issue']}:\n{r['text']}" for r in rules))
+        return blocks
 
     def fill_request(self, step: dict, fixed: dict, keys: list[str], note: str = "") -> str:
         parts = [f"Triage issue #{self.ctx.issue_number}. You are running step {step.get('id')} of a fixed "
@@ -253,11 +413,24 @@ class Executor:
             parts.append("The plan's notes on them: " + "; ".join(f"{k}: {v}" for k, v in notes.items()))
         if note:
             parts.append(note)
-        return "\n\n".join(parts + self.context())
+        request = "\n\n".join(parts + self.context())
+        if self.f_mode.startswith("attention_"):
+            request += "\n\nAdditional Ledgerline repository context:\n" + self.f_corpus
+        if self.f_mode in ("attention_fixed", "compaction_fixed", "session_stated"):
+            request += "\n\nCurrent maintainer instruction (priya-s), preserve its label rule:\n" + F_FACT
+        self.f_shown = True
+        return request
 
     def record(self, step: dict, args: dict, result, error: str | None = None) -> dict:
         tool = step.get("tool")
         text = result.content if result is not None else ""
+        if result is not None:
+            self.completed_calls.append({
+                "step": step.get("id"), "tool": tool, "args": copy.deepcopy(args),
+                "key": result.key,
+                "result": {"content": result.content, "is_error": result.is_error,
+                           "latency_s": result.latency_s},
+            })
         count, paths = None, []
         if result is not None and role(tool) in ("search", "read_file"):
             paths = result_paths(tool, args, text, result.is_error)
@@ -270,12 +443,78 @@ class Executor:
         entry = {"id": step.get("id"), "tool": tool, "status": status, "count": count,
                  "paths": paths, "error_code": error, "args": args}
         self.results.append(entry)
+        if self.f_mode.startswith("compaction_") and role(tool) != "read_issue":
+            self.f_turns.append(f"Step {step.get('id')}: {tool} returned\n{text[:CONTEXT_CHARS]}")
         self.ran.add(str(step.get("id")))
         self.outputs[str(step.get("id"))] = text
         for s in self.plan.get("steps") or []:
             if str(s.get("id")) == str(step.get("id")):
                 s["status"] = entry["status"]
         return entry
+
+    def remember_completion(self) -> None:
+        """Remember a posted decision as an episode, never as established truth."""
+        if self.next_step() is not None or self.draft is None:
+            return
+        comment = self.comment_step()
+        if comment.get("status") != "done":
+            return
+        if any(record.get("run_id") == self.ctx.run_id for record in self.store.records()):
+            return
+        if self.f_mode == "session_stated":
+            existing = [r for r in self.store.active(REPOSITORY, self.ctx.issue_number)
+                        if r["source"] == "user" and r["text"] == F_FACT]
+            if not existing:
+                self.store.write({
+                    "repository": REPOSITORY, "issue": self.ctx.issue_number,
+                    "kind": "procedural", "text": F_FACT, "source": "user",
+                    "written_at": datetime.now(timezone.utc).isoformat(),
+                    "origin": "ingested", "confirmed": True, "stated_by": "priya-s (Part F experimental note)",
+                })
+        label, file = parse_triage_comment(self.draft[arg("comment", "body")])
+        read_paths = [call["args"].get(arg("read_file", "path")) for call in self.completed_calls
+                      if role(call["tool"]) == "read_file" and not call["result"]["is_error"]]
+        self.store.write({
+            "repository": REPOSITORY, "issue": self.ctx.issue_number,
+            "kind": "episodic", "source": "memory", "origin": "derived",
+            "written_at": datetime.now(timezone.utc).isoformat(), "confirmed": True,
+            "text": f"Run {self.ctx.run_id} posted label: {label}, file: {file or 'none'}. "
+                    "This is a historical triage decision, not a verified current diagnosis.",
+            "run_id": self.ctx.run_id, "label": label, "file": file or "none", "read_paths": read_paths,
+        })
+
+    def save_progress(self, step, *, current_step=None) -> None:
+        """Save task state, separate from the search's plan-revision check."""
+        findings = {
+            "write_args": self.write_args,
+            "draft": self.draft,
+            # Small executor bookkeeping needed to retain revision limits and context.
+            "executor": {
+                "version": self.version, "calls": self.calls,
+                "revisions": self.revisions, "revised": sorted(self.revised),
+                "ran": sorted(self.ran), "results": self.results,
+            },
+        }
+        if self.draft is not None:
+            label, file = parse_triage_comment(str(self.draft[arg("comment", "body")]))
+            findings.update(label=label, file=file or "none")
+        checkpoint = {
+            "plan": self.plan,
+            "step_status": {str(s["id"]): s.get("status", "pending")
+                            for s in self.plan.get("steps", [])},
+            "completed_calls": self.completed_calls,
+            "findings": findings,
+            "current_step": current_step,
+        }
+        self.checkpointer.save(self.ctx.run_id, checkpoint, step=step, mode="sync")
+        self.ctx.trace.event("checkpoint", step=step, mode="sync")
+        if isinstance(self.ctx.client, CheckpointMeasurementClient):
+            # Only this separate comparison file gets conversation data.
+            expanded = dict(checkpoint, conversation=self.ctx.client.sent_messages)
+            path = self.ctx.root / "reports" / "checkpoint_samples" / f"{self.ctx.run_id}.jsonl"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("a") as output:
+                output.write(json.dumps(expanded, allow_nan=False) + "\n")
 
     # -- revision, at the checkpoint whose check failed --------------------------------------
     def checkpoint(self, name: str, ok: bool) -> bool:

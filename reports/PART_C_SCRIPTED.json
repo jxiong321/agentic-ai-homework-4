@@ -1,0 +1,129 @@
+{
+  "matrix_uuid": [
+    {
+      "run_id": "planned-4201-s01-b5e717",
+      "step": 1,
+      "when": "after",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-86ea63",
+      "step": 1,
+      "when": "during",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-512ce3",
+      "step": 2,
+      "when": "after",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-1f02a0",
+      "step": 2,
+      "when": "during",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-b06544",
+      "step": 3,
+      "when": "after",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-d0f52f",
+      "step": 3,
+      "when": "during",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-4f54f9",
+      "step": 4,
+      "when": "after",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-f66c5a",
+      "step": 4,
+      "when": "during",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-646b88",
+      "step": 5,
+      "when": "after",
+      "comments": 2,
+      "open_prs": 1,
+      "matches": false
+    },
+    {
+      "run_id": "planned-4201-s01-b6c4d8",
+      "step": 5,
+      "when": "during",
+      "comments": 2,
+      "open_prs": 1,
+      "matches": false
+    }
+  ],
+  "duplicate_comment_ids": {
+    "planned-4201-s01-646b88": [
+      21,
+      22
+    ],
+    "planned-4201-s01-b6c4d8": [
+      23,
+      24
+    ]
+  },
+  "comment_ids": {
+    "planned-4201-s01-b5e717": [
+      13
+    ],
+    "planned-4201-s01-86ea63": [
+      14
+    ],
+    "planned-4201-s01-512ce3": [
+      15
+    ],
+    "planned-4201-s01-1f02a0": [
+      16
+    ],
+    "planned-4201-s01-b06544": [
+      17
+    ],
+    "planned-4201-s01-d0f52f": [
+      18
+    ],
+    "planned-4201-s01-4f54f9": [
+      19
+    ],
+    "planned-4201-s01-f66c5a": [
+      20
+    ],
+    "planned-4201-s01-646b88": [
+      21,
+      22
+    ],
+    "planned-4201-s01-b6c4d8": [
+      23,
+      24
+    ]
+  },
+  "plan_differences": []
+}

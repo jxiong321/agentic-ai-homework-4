@@ -1,0 +1,107 @@
+{
+  "seed_run_id": "planned-4207-s01-17a85a",
+  "with_store": [
+    {
+      "run_id": "planned-4207-s01-290a89",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 12494,
+      "label": "bug",
+      "file": "src/worker/scheduled.ts",
+      "file_evidence": "not read and not identified in retrieved memory",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-a614f5",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 16339,
+      "label": "bug",
+      "file": "src/worker/scheduled.ts",
+      "file_evidence": "present in retrieved memory, not read this run",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-8c5435",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 14336,
+      "label": "bug",
+      "file": "src/worker/scheduler.ts",
+      "file_evidence": "present in retrieved memory, not read this run",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-9367e6",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 18207,
+      "label": "bug",
+      "file": "src/worker/scheduled.ts",
+      "file_evidence": "present in retrieved memory, not read this run",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-d8176e",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 19167,
+      "label": "bug",
+      "file": "src/worker/scheduled.ts",
+      "file_evidence": "present in retrieved memory, not read this run",
+      "episodes_written": 1
+    }
+  ],
+  "empty_store": [
+    {
+      "run_id": "planned-4207-s01-134b97",
+      "passed": true,
+      "tool_calls": 5,
+      "tokens": 11480,
+      "label": "bug",
+      "file": "src/export/scheduler.ts",
+      "file_evidence": "not read and not identified in retrieved memory",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-61d22e",
+      "passed": true,
+      "tool_calls": 5,
+      "tokens": 15742,
+      "label": "bug",
+      "file": "src/export/scheduler.ts",
+      "file_evidence": "not read and not identified in retrieved memory",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-dabe52",
+      "passed": true,
+      "tool_calls": 5,
+      "tokens": 18782,
+      "label": "bug",
+      "file": "src/export/scheduler.ts",
+      "file_evidence": "not read and not identified in retrieved memory",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-8d0b3b",
+      "passed": true,
+      "tool_calls": 5,
+      "tokens": 11522,
+      "label": "bug",
+      "file": "src/export/scheduler.ts",
+      "file_evidence": "not read and not identified in retrieved memory",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-4d3971",
+      "passed": true,
+      "tool_calls": 5,
+      "tokens": 14402,
+      "label": "bug",
+      "file": "src/export/scheduler.ts",
+      "file_evidence": "not read and not identified in retrieved memory",
+      "episodes_written": 1
+    }
+  ]
+}

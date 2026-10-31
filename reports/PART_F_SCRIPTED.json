@@ -1,0 +1,290 @@
+{
+  "conditions": {
+    "attention_lost": {
+      "run_id": "planned-4192-s01-024f2b",
+      "mode": "attention_lost",
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "uses_fact": false,
+      "drafting_trace_line": 13,
+      "drafting_request_line": 4,
+      "fact_in_draft": true,
+      "fact_position": 32513,
+      "request_characters": 59529,
+      "edge_distance": 26898,
+      "compaction_trace_lines": [],
+      "fact_sent_calls": [
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          3
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          14,
+          5
+        ]
+      ],
+      "store_read_trace_lines": [
+        6
+      ],
+      "retrieved_rule_ids": []
+    },
+    "attention_fixed": {
+      "run_id": "planned-4192-s01-0734cf",
+      "mode": "attention_fixed",
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "uses_fact": false,
+      "drafting_trace_line": 13,
+      "drafting_request_line": 4,
+      "fact_in_draft": true,
+      "fact_position": 59451,
+      "request_characters": 59569,
+      "edge_distance": 0,
+      "compaction_trace_lines": [],
+      "fact_sent_calls": [
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          3
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          14,
+          5
+        ]
+      ],
+      "store_read_trace_lines": [
+        6
+      ],
+      "retrieved_rule_ids": []
+    },
+    "compaction_lost": {
+      "run_id": "planned-4192-s01-dfd454",
+      "mode": "compaction_lost",
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "uses_fact": false,
+      "drafting_trace_line": 15,
+      "drafting_request_line": 5,
+      "fact_in_draft": false,
+      "fact_position": -1,
+      "request_characters": 2008,
+      "edge_distance": null,
+      "compaction_trace_lines": [
+        14
+      ],
+      "fact_sent_calls": [
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          3
+        ],
+        [
+          13,
+          4
+        ]
+      ],
+      "store_read_trace_lines": [
+        6
+      ],
+      "retrieved_rule_ids": []
+    },
+    "compaction_fixed": {
+      "run_id": "planned-4192-s01-511d18",
+      "mode": "compaction_fixed",
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "uses_fact": false,
+      "drafting_trace_line": 15,
+      "drafting_request_line": 5,
+      "fact_in_draft": true,
+      "fact_position": 2076,
+      "request_characters": 2194,
+      "edge_distance": 0,
+      "compaction_trace_lines": [
+        14
+      ],
+      "fact_sent_calls": [
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          3
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          15,
+          5
+        ],
+        [
+          16,
+          6
+        ]
+      ],
+      "store_read_trace_lines": [
+        6
+      ],
+      "retrieved_rule_ids": []
+    },
+    "session_stated": {
+      "run_id": "planned-4192-s01-462a94",
+      "mode": "session_stated",
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "uses_fact": false,
+      "drafting_trace_line": 13,
+      "drafting_request_line": 4,
+      "fact_in_draft": true,
+      "fact_position": 3769,
+      "request_characters": 3887,
+      "edge_distance": 0,
+      "compaction_trace_lines": [],
+      "fact_sent_calls": [
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          3
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          14,
+          5
+        ]
+      ],
+      "store_read_trace_lines": [
+        6
+      ],
+      "retrieved_rule_ids": []
+    },
+    "session_lost": {
+      "run_id": "planned-4192-s01-d3763d",
+      "mode": "session_lost",
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "uses_fact": false,
+      "drafting_trace_line": 13,
+      "drafting_request_line": 4,
+      "fact_in_draft": false,
+      "fact_position": -1,
+      "request_characters": 3701,
+      "edge_distance": null,
+      "compaction_trace_lines": [],
+      "fact_sent_calls": [],
+      "store_read_trace_lines": [
+        6
+      ],
+      "retrieved_rule_ids": []
+    },
+    "session_fixed": {
+      "run_id": "planned-4192-s01-d12e13",
+      "mode": "session_fixed",
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "uses_fact": false,
+      "drafting_trace_line": 13,
+      "drafting_request_line": 4,
+      "fact_in_draft": true,
+      "fact_position": 5025,
+      "request_characters": 6830,
+      "edge_distance": 1687,
+      "compaction_trace_lines": [],
+      "fact_sent_calls": [
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          3
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          14,
+          5
+        ]
+      ],
+      "store_read_trace_lines": [
+        6
+      ],
+      "retrieved_rule_ids": [
+        "9f9f92e8c6714b3083f32a1a9f4aae86"
+      ]
+    }
+  },
+  "attempts": [
+    {
+      "run_id": "planned-4192-s01-50fd6d",
+      "mode": "session_fixed",
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "uses_fact": false,
+      "drafting_trace_line": 13,
+      "drafting_request_line": 4,
+      "fact_in_draft": true,
+      "fact_position": 4501,
+      "request_characters": 5430,
+      "edge_distance": 811,
+      "compaction_trace_lines": [],
+      "fact_sent_calls": [
+        [
+          8,
+          2
+        ],
+        [
+          11,
+          3
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          14,
+          5
+        ]
+      ],
+      "store_read_trace_lines": [
+        6
+      ],
+      "retrieved_rule_ids": [
+        "9f9f92e8c6714b3083f32a1a9f4aae86"
+      ]
+    }
+  ],
+  "checks": {
+    "attention": false,
+    "compaction": false,
+    "session": false
+  }
+}

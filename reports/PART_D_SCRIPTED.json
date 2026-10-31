@@ -1,0 +1,107 @@
+{
+  "seed_run_id": "planned-4207-s01-287d32",
+  "with_store": [
+    {
+      "run_id": "planned-4207-s01-990a0b",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 11026,
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "file_evidence": "read in this run",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-a9171a",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 11633,
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "file_evidence": "read in this run",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-28c8b2",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 12240,
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "file_evidence": "read in this run",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-b177d5",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 12847,
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "file_evidence": "read in this run",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-48c5da",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 13454,
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "file_evidence": "read in this run",
+      "episodes_written": 1
+    }
+  ],
+  "empty_store": [
+    {
+      "run_id": "planned-4207-s01-9d160f",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 8453,
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "file_evidence": "read in this run",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-2ee995",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 8453,
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "file_evidence": "read in this run",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-eb3652",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 8453,
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "file_evidence": "read in this run",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-6260de",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 8453,
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "file_evidence": "read in this run",
+      "episodes_written": 1
+    },
+    {
+      "run_id": "planned-4207-s01-91c949",
+      "passed": false,
+      "tool_calls": 5,
+      "tokens": 8453,
+      "label": "bug",
+      "file": "src/ingest/dedupe.ts",
+      "file_evidence": "read in this run",
+      "episodes_written": 1
+    }
+  ]
+}

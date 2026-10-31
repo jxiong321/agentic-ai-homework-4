@@ -17,16 +17,16 @@ What each layer is for (Lecture 1, slides 42 to 44):
 - **Observability**: a step-by-step record of what it did.
 - **Evaluation**: measuring quality, before and after release.
 
-The table below is RepoMind as Assignment 3 left it.
+The table below describes the completed Assignment 4 implementation. Recovery is explicit: no service automatically detects crashes and restarts the agent.
 
 | Layer | What does this job | Where it is enforced | Status |
 |---|---|---|---|
-| Model | The configured model, called only through the metered client | `harness/client.py:150` | present |
-| Harness | The loop, with three bounds checked in code; a plan validated before it runs, and an executor that runs only the plan's steps | `agent/loop.py:38`, `ways/planned.py:117`, `ways/planned.py:218` | present |
-| Tools | Five namespaced tools behind one registry: every call checked at the boundary before it runs; every write keyed by the harness, checked before each attempt and read back after a timeout; every attempt in the call record | `tools/__init__.py:166`, `tools/__init__.py:249`, `tools/__init__.py:254`, `tools/__init__.py:271`, `tools/__init__.py:315` | present |
-| Memory & State | A run's progress file, outside the model's context | `ways/notes.py:67` | partial: nothing survives a run |
-| Control & Policy | A hook runs before every call and denies when it fails; a write that cannot be confirmed goes to a person; the second pass holds a draft that still fails | `tools/__init__.py:221`, `ways/planned.py:186` | partial: the hook allows every call |
-| Observability | One trace line per model call and per tool call, and the plan as data before it runs | `agent/loop.py:50`, `ways/planned.py:89` | partial: traces, no alerts |
-| Evaluation | The grounded check reads the tracker, never the agent | `eval/check_triage.py:7` | partial: offline only |
+| Model | The configured model, called through the metered client; experimental message capture delegates to that same client | `harness/client.py:150`, `ways/planned.py:94` | present |
+| Harness | A validated plan and bounded revisions; an executor follows its steps, restores saved progress, and compacts tool history in the Part F experiments while retaining the issue separately | `ways/planned.py:163`, `ways/planned.py:235`, `ways/planned.py:265`, `ways/planned.py:368`, `ways/planned.py:520` | partial: manual restart, no crash supervisor |
+| Tools | Five namespaced tools behind a validating registry; stable derived write keys, existence checks before writes, read-back after timeouts, and a call record | `tools/__init__.py:155`, `tools/__init__.py:245`, `tools/__init__.py:284`, `tools/__init__.py:291`, `tools/__init__.py:313` | present |
+| Memory & State | SQLite checkpoints preserve the plan, statuses, call results/keys, findings and current step; resume restores them. A separate SQLite store shares sourced, dated memories across runs, replaces contradicted rules atomically, expires old entries and bounds storage | `state/checkpointer.py:78`, `state/checkpointer.py:119`, `ways/planned.py:235`, `ways/planned.py:486`, `state/store.py:57`, `state/store.py:83`, `state/store.py:95`, `state/store.py:104`, `state/store.py:120`, `ways/planned.py:455` | present |
+| Control & Policy | Reject malformed plan arguments; save synchronously before each write; reuse saved write arguments; escalate unverifiable writes; constrain memory provenance and issue claims; hold drafts failing the second pass | `ways/planned.py:134`, `ways/planned.py:303`, `ways/planned.py:317`, `state/store.py:57`, `ways/planned.py:599`, `tools/__init__.py:221` | partial: the general tool hook still allows every call; maintainer-rule interpretation depends on the model |
+| Observability | Trace plans, model/tool calls, saves and restores, memory reads and compactions; record actual development-issue requests for the forgetting experiments | `harness/trace.py:73`, `harness/trace.py:96`, `harness/trace.py:114`, `harness/trace.py:125`, `harness/client.py:136`, `ways/planned.py:185`, `ways/planned.py:486` | partial: stored evidence, no operational alerts |
+| Evaluation | Grounded triage checks read tracker results; crash matrices count actual writes; memory comparisons and forgetting experiments inspect outcomes and request evidence | `eval/check_triage.py:7`, `eval/run_part_b.py:45`, `eval/run_part_c.py:43`, `eval/run_part_d.py:40`, `eval/run_part_f.py:28`, `eval/run_part_f.py:59` | partial: offline experiments, not continuous production evaluation |
 
-**Empty layers: 0 of 7**, and five are partial.
+**Empty layers: 0 of 7; partial layers: 4 of 7.** A present memory layer does not guarantee accurate memories: the measured Part D memory condition performed worse than the empty-store condition.

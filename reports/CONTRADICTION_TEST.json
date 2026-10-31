@@ -1,0 +1,12 @@
+{
+  "original_id": "1d65497f483740c58d2b0d0356d40a99",
+  "replacement_id": "e6af9e492a7f493f917ef192ab92177f",
+  "original_text": "For duplicates: label them `duplicate` and link the original. Never close\nthem; I close duplicates myself once the reporter has seen the link.\n",
+  "replacement_text": "For duplicates: label them duplicate and link the original; close duplicates after 14 days.",
+  "session_one": "Part D: python -m eval.seed_memories",
+  "session_two": "python -m eval.contradiction_test --replace",
+  "retrieved_ids": [
+    "e6af9e492a7f493f917ef192ab92177f"
+  ],
+  "session_three": "python -m eval.contradiction_test --retrieve"
+}

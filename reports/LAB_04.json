@@ -1,19 +1,268 @@
 {
-  "plan_marks": [],
-  "durability": null,
-  "uncrashed_run_id": null,
-  "matrix_derived": [],
-  "matrix_uuid": [],
-  "duplicate_comment_ids": {},
-  "reopened": {
-    "with_store": {"runs": 0, "passes": 0, "mean_tool_calls": null, "mean_tokens": null, "run_ids": []},
-    "empty_store": {"runs": 0, "passes": 0, "mean_tool_calls": null, "mean_tokens": null, "run_ids": []}
+  "plan_marks": [
+    {
+      "step": 1,
+      "kind": "read",
+      "checkpoint": "none"
+    },
+    {
+      "step": 2,
+      "kind": "read",
+      "checkpoint": "after"
+    },
+    {
+      "step": 3,
+      "kind": "read",
+      "checkpoint": "none"
+    },
+    {
+      "step": 4,
+      "kind": "keyed_write",
+      "checkpoint": "before"
+    },
+    {
+      "step": 5,
+      "kind": "keyed_write",
+      "checkpoint": "before"
+    }
+  ],
+  "durability": "sync",
+  "uncrashed_run_id": "planned-4201-s01-83fa54",
+  "matrix_derived": [
+    {
+      "run_id": "planned-4201-s01-daa6c7",
+      "step": 1,
+      "when": "after",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-b37c5f",
+      "step": 1,
+      "when": "during",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-d410c6",
+      "step": 2,
+      "when": "after",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-90d272",
+      "step": 2,
+      "when": "during",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-497f9e",
+      "step": 3,
+      "when": "after",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-2aa547",
+      "step": 3,
+      "when": "during",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-715b83",
+      "step": 4,
+      "when": "after",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-698b0c",
+      "step": 4,
+      "when": "during",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-6266d2",
+      "step": 5,
+      "when": "after",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-0c3233",
+      "step": 5,
+      "when": "during",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    }
+  ],
+  "matrix_uuid": [
+    {
+      "run_id": "planned-4201-s01-fa9c8e",
+      "step": 1,
+      "when": "after",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-f81291",
+      "step": 1,
+      "when": "during",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-bc54ec",
+      "step": 2,
+      "when": "after",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-3b36f9",
+      "step": 2,
+      "when": "during",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-ce2d1f",
+      "step": 3,
+      "when": "after",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-0adceb",
+      "step": 3,
+      "when": "during",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-a208e9",
+      "step": 4,
+      "when": "after",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-11486b",
+      "step": 4,
+      "when": "during",
+      "comments": 1,
+      "open_prs": 1,
+      "matches": true
+    },
+    {
+      "run_id": "planned-4201-s01-c3dc1c",
+      "step": 5,
+      "when": "after",
+      "comments": 2,
+      "open_prs": 1,
+      "matches": false
+    },
+    {
+      "run_id": "planned-4201-s01-96dbc8",
+      "step": 5,
+      "when": "during",
+      "comments": 2,
+      "open_prs": 1,
+      "matches": false
+    }
+  ],
+  "duplicate_comment_ids": {
+    "planned-4201-s01-c3dc1c": [
+      9,
+      10
+    ],
+    "planned-4201-s01-96dbc8": [
+      11,
+      12
+    ]
   },
-  "checkpoint_bytes": {"structured": null, "with_conversation": null, "runs": 0},
-  "contradiction_test": [],
+  "reopened": {
+    "with_store": {
+      "runs": 5,
+      "passes": 0,
+      "mean_tool_calls": 5,
+      "mean_tokens": 16108.6,
+      "run_ids": [
+        "planned-4207-s01-290a89",
+        "planned-4207-s01-a614f5",
+        "planned-4207-s01-8c5435",
+        "planned-4207-s01-9367e6",
+        "planned-4207-s01-d8176e"
+      ]
+    },
+    "empty_store": {
+      "runs": 5,
+      "passes": 5,
+      "mean_tool_calls": 5,
+      "mean_tokens": 14385.6,
+      "run_ids": [
+        "planned-4207-s01-134b97",
+        "planned-4207-s01-61d22e",
+        "planned-4207-s01-dabe52",
+        "planned-4207-s01-8d0b3b",
+        "planned-4207-s01-4d3971"
+      ]
+    }
+  },
+  "checkpoint_bytes": {
+    "structured": 24388,
+    "with_conversation": 219447,
+    "runs": 1
+  },
+  "contradiction_test": [
+    "e6af9e492a7f493f917ef192ab92177f"
+  ],
   "forgetting": {
-    "attention": {"fact": null, "effect": {}, "lost": null, "fixed": null},
-    "compaction": {"fact": null, "effect": {}, "lost": null, "fixed": null},
-    "session": {"fact": null, "effect": {}, "stated": null, "lost": null, "fixed": null}
+    "attention": {
+      "fact": "Ledgerline's maintainers label every report about the Export button feature: they plan its fixes on the feature board.",
+      "effect": {
+        "label": "feature"
+      },
+      "lost": "planned-4192-s01-4f9a76",
+      "fixed": "planned-4192-s01-455f96"
+    },
+    "compaction": {
+      "fact": "Ledgerline's maintainers label every report about the Export button feature: they plan its fixes on the feature board.",
+      "effect": {
+        "label": "feature"
+      },
+      "lost": "planned-4192-s01-354fea",
+      "fixed": "planned-4192-s01-b17183"
+    },
+    "session": {
+      "fact": "Ledgerline's maintainers label every report about the Export button feature: they plan its fixes on the feature board.",
+      "effect": {
+        "label": "feature"
+      },
+      "lost": "planned-4192-s01-bc5e38",
+      "fixed": "planned-4192-s01-8696c8",
+      "stated": "planned-4192-s01-fba1a0"
+    }
   }
 }
